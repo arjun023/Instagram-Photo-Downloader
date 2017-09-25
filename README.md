@@ -1,12 +1,12 @@
 ## Instagram Photo Downloader
 
-- It is for downloading your friend's photos and videos with your acount.
-- Your username and your password don't be stored.
-- If you have two factor authentication in your Instagram account or not, it still works.
-- It uses `Selenium` and two different browser which are `Chrome` and `PhantomJS`
+- It is for downloading your friend's photos and videos with your account.
+- Your username and your password won't be stored.
+- Whether or not you have two factor authentication in your Instagram account or not, this will still work.
+- It uses `Selenium` and two different browsers which are `Chrome` and `PhantomJS`
     - The driver is being asked at the beginning of the program.
     - If you want to see what happens -> use `Chrome`
-    - If you want the process at the background -> use `PhantomJs`
+    - If you want to view the process in the background -> use `PhantomJs`
 
 ## Requirements
 
@@ -17,7 +17,7 @@
 
 ## How to install and run
 
-1. Download and install `Python 3.6` in your computer.
+1. Download and install `Python 3.6` into your computer.
 	- [Python Download Page](https://www.python.org/downloads/ "Python Download Page")
 2. Install `Pip`
 	- [Pip Installation Page](https://pip.pypa.io/en/stable/installing/ "Pip Installation Page")
