@@ -41,7 +41,35 @@
         - Copy `path\phantomjs-2.1.1-windows\bin\phantomjs.exe` file to `C:\Program Files (x86)\Python36-32\Scripts`
 6. Run python file with Python 3
 	- `python Instagram_Photo_Donwloader.py`
-    
+
+## Usage
+
+Simply call `python Instagram-Photo-Downloader.py`
+
+First you have to choose a driver, PhantomJs or Chrome.
+
+It will ask for your Instagram username and password for logging in (If you did not define them in config.js). Then it will ask for a username which user's photo you want to download.
+
+You can download:
+- All user's photos
+- Just the last stories you do not have
+- Number of photos
+
+## Advanced Usage
+
+```
+usage: Instagram_Photo_Downloader.py [-h] [-u] [-p] [-d] [--path]
+
+Fetch all the lectures for a Instagram
+
+optional arguments:
+  -h, --help        show this help message and exit
+  -u , --username   User username
+  -p , --password   User password
+  -d , --driver     Choosen Driver. [1]PantomJS [2]Chrome
+  --path            The path for saving photos.
+```
+
 ## Config.Json File
 
 This file can be used for saving login data and path for photos. Nothing is saved automatically to here even if you change the file.
