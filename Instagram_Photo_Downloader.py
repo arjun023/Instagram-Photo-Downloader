@@ -10,6 +10,7 @@ from termcolor      import colored, cprint
 import os
 import json
 import platform
+import argparse
 
 print_red       = lambda x, y="\n" : cprint(x, "red", end=y)
 print_green     = lambda x, y="\n" : cprint(x, "green", end=y)
@@ -56,46 +57,62 @@ def read_json():
             return False, null
 
 def get_username():
-    config = read_json()
-    if os.path.isfile("config.json") and config[0]:
-        if config[1]["username"] != "":
-            return config[1]["username"]
+    if args.username:
+        return args.username
+    else:
+        config = read_json()
+        if os.path.isfile("config.json") and config[0]:
+            if config[1]["username"] != "":
+                return config[1]["username"]
+            else:
+                return input("Username : ")
         else:
             return input("Username : ")
-    else:
-        return input("Username : ")
 
 def get_password():
-    config = read_json()
-    if os.path.isfile("config.json") and config[0]:
-        if config[1]["password"] != "":
-            return config[1]["password"]
+    if args.password:
+        return args.password
+    else:
+        config = read_json()
+        if os.path.isfile("config.json") and config[0]:
+            if config[1]["password"] != "":
+                return config[1]["password"]
+            else:
+                return getpass("Password : ")
         else:
             return getpass("Password : ")
-    else:
-        return getpass("Password : ")
 
 def get_path():
-    config = read_json()
-    if os.path.isfile("config.json") and config[0]:
-        if config[1]["path"] != "":
-            return config[1]["path"]
+    if args.path:
+        return args.path
+    else:
+        config = read_json()
+        if os.path.isfile("config.json") and config[0]:
+            if config[1]["path"] != "":
+                return config[1]["path"]
+            else:
+                return "pictures"
         else:
             return "pictures"
-    else:
-        return "pictures"
 
 def choose_driver():
-    while True:
-        print_cyan("CHOOSE DRIVER : [1]PhantomJS [2]Chrome")
-        d_choice = input("Driver : ")
+    if args.driver == 1:
+        driver = webdriver.PhantomJS()
+        print_cyan("Driver : PhantomJS")
+    elif args.driver == 2:
+        driver = webdriver.Chrome()
+        print_cyan("Driver : Chrome")
+    else:
+        while True:
+            print_cyan("CHOOSE DRIVER : [1]PhantomJS [2]Chrome")
+            d_choice = input("Driver : ")
 
-        if d_choice == "1":
-            driver = webdriver.PhantomJS()
-            break
-        elif d_choice == "2":
-            driver = webdriver.Chrome()
-            break 
+            if d_choice == "1":
+                driver = webdriver.PhantomJS()
+                break
+            elif d_choice == "2":
+                driver = webdriver.Chrome()
+                break 
     return driver
     
 def line():
@@ -202,21 +219,34 @@ def download_photos(driver, imgLinks, folderName):
     
     while True:
         print("How many stories do you want to download?")
-        lastStr = input("(For all stories, give 0) : ")
+        print_magenta("Give number ", "")
+        print_cyan("-> For downloading the number of stories")
+        print_magenta("Give '0'    ", "")
+        print_cyan("-> For downloading all stroies")
+        print_magenta("Live empty  ", "")
+        print_cyan("-> For downloading last stories you do not have")
+        lastStr = input("Give input : ")
         try:
-            last = int(lastStr)
-            if last > 0:
-                break
-            elif last == 0:
+            if lastStr == "":
                 last = total
+                just_last_photos = True
                 break
             else:
-                print_red("Input cannot be negative!")
+                just_last_photos = False
+                last = int(lastStr)
+                if last > 0:
+                    break
+                elif last == 0:
+                    last = total
+                    break
+                else:
+                    print_red("Input cannot be negative!")
         except:
             print_red("Please give number!")
         line()
     
     print_green("Download process started!")
+    done = False
     
     for idx, link in enumerate(imgLinks):
         driver.get(link)
@@ -247,6 +277,8 @@ def download_photos(driver, imgLinks, folderName):
                     urlretrieve(img_link, path)
                     down += 1
                 else:
+                    if just_last_photos:
+                        done = True
                     ndown += 1
         except:
             try:
@@ -273,13 +305,15 @@ def download_photos(driver, imgLinks, folderName):
                 urlretrieve(img_link, path)
                 down += 1
             else:
+                if just_last_photos:
+                    done = True
                 ndown += 1
         
         # Info
         print_cyan("> " + str(idx + 1) + " / " + str(last) + " stories downloaded...", "\r")
             
-        # Max photo check
-        if idx == last - 1:
+        # Max photo check - Break outer loop when inner loop broken
+        if idx == last - 1 or done:
             print_cyan("# " + str(idx + 1) + " #", "")
             print_green(" stories downloaded.          ")
             break
@@ -289,10 +323,20 @@ def download_photos(driver, imgLinks, folderName):
     print_green("Total downloaded stories: " + str(last))
     print_green("")
     print_green("Total found photos      : " + str(down + ndown))
-    print_green("Total Download          : " + str(down))
+    print_cyan ("Total Download          : " + str(down))
     print_green("Already exists          : " + str(ndown))
 
 def core():
+    # Parser
+    parser = argparse.ArgumentParser(description="Fetch all the lectures for a Instagram")
+    parser.add_argument("-u", "--username", metavar="", help="User username")
+    parser.add_argument("-p", "--password", metavar="", help="User password")
+    parser.add_argument("-d", "--driver",   metavar="", type=int, choices=[1,2], help="Choosen Driver. [1]PantomJS [2]Chrome")
+    parser.add_argument("--path", metavar="", help="The path for saving photos.")
+    global args 
+    args = parser.parse_args()
+
+    # Program
     create_config_if_not_exist()
     init()
     clear_screen()
