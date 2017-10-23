@@ -18,6 +18,15 @@ print_magenta   = lambda x, y="\n" : cprint(x, "magenta", end=y)
 print_yellow    = lambda x, y="\n" : cprint(x, "yellow", end=y)
 print_cyan      = lambda x, y="\n" : cprint(x, "cyan", end=y)
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Fetch all the lectures for a Instagram")
+    parser.add_argument("-u", "--username", metavar="", help="User username")
+    parser.add_argument("-p", "--password", metavar="", help="User password")
+    parser.add_argument("-d", "--driver",   metavar="", type=int, choices=[1,2], help="Choosen Driver. [1]PantomJS [2]Chrome")
+    parser.add_argument("--path", metavar="", help="The path for saving photos.")
+    global args 
+    args = parser.parse_args()
+
 def clear_screen():
     plt = platform.system()
     
@@ -47,25 +56,22 @@ def header():
 
 def read_json():
     if not os.path.isfile("config.json"):
-        return False, null
+        return None
     else:
         try:
             with open("config.json") as data_file:
                 data = json.load(data_file)
-            return True, data
+            return data
         except:
-            return False, null
+            return None
 
 def get_username():
     if args.username:
         return args.username
     else:
         config = read_json()
-        if os.path.isfile("config.json") and config[0]:
-            if config[1]["username"] != "":
-                return config[1]["username"]
-            else:
-                return input("Username : ")
+        if config and config["username"] != "":
+            return config["username"]
         else:
             return input("Username : ")
 
@@ -74,11 +80,8 @@ def get_password():
         return args.password
     else:
         config = read_json()
-        if os.path.isfile("config.json") and config[0]:
-            if config[1]["password"] != "":
-                return config[1]["password"]
-            else:
-                return getpass("Password : ")
+        if config and config["password"] != "":
+            return config["password"]
         else:
             return getpass("Password : ")
 
@@ -87,11 +90,8 @@ def get_path():
         return args.path
     else:
         config = read_json()
-        if os.path.isfile("config.json") and config[0]:
-            if config[1]["path"] != "":
-                return config[1]["path"]
-            else:
-                return "pictures"
+        if config and config["path"] != "":
+            return config["path"]
         else:
             return "pictures"
 
@@ -103,6 +103,16 @@ def choose_driver():
         driver = webdriver.Chrome()
         print_cyan("Driver : Chrome")
     else:
+        config = read_json()
+        if config and "driver" in config:
+            _dri = config["driver"]
+            if _dri == 1:
+                print_cyan("Driver : PhantomJS")
+                return webdriver.PhantomJS()
+            elif _dri == 2:
+                print_cyan("Driver : Chrome")
+                return webdriver.Chrome()
+
         while True:
             print_cyan("CHOOSE DRIVER : [1]PhantomJS [2]Chrome")
             d_choice = input("Driver : ")
@@ -327,25 +337,15 @@ def download_photos(driver, imgLinks, folderName):
     print_green("Already exists          : " + str(ndown))
 
 def core():
-    # Parser
-    parser = argparse.ArgumentParser(description="Fetch all the lectures for a Instagram")
-    parser.add_argument("-u", "--username", metavar="", help="User username")
-    parser.add_argument("-p", "--password", metavar="", help="User password")
-    parser.add_argument("-d", "--driver",   metavar="", type=int, choices=[1,2], help="Choosen Driver. [1]PantomJS [2]Chrome")
-    parser.add_argument("--path", metavar="", help="The path for saving photos.")
-    global args 
-    args = parser.parse_args()
-
-    # Program
+    parse_args()
     create_config_if_not_exist()
     init()
     clear_screen()
-    
+
     header()
-    
     driver = choose_driver()
     line()
-    
+
     signing_in(driver)
     
     while True :

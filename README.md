@@ -73,7 +73,8 @@ optional arguments:
 ## Config.Json File
 
 This file can be used for saving login data and path for photos. Nothing is saved automatically to here even if you change the file.
-- *username* : User's username
-- *password* : User's pass
-- *path* : The path for saving photos. Default value is `photos`
+- *driver*   : (*int*) Driver you want to use as default (*1* or *2*)
+- *username* : (*string*) User's username
+- *password* : (*string*) User's pass
+- *path*     : (*string*) The path for saving photos. Default value is `photos`
     - Exp : `path/photos` or `../path/photos`
