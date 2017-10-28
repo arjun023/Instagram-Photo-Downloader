@@ -361,7 +361,7 @@ def core():
         
         ans = input("Use again(y/N)? : ")
         line()
-        if not ans == "y":
+        if ans == "N" or ans == "n":
             break
     
     input("Press any key to exit")
