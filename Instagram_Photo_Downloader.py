@@ -136,7 +136,7 @@ def signing_in(driver):
         print_green("Logging in...")
         driver.get("https://www.instagram.com/")
         try:
-            driver.find_element_by_class_name("_b93kq").click()
+            driver.find_element_by_css_selector("._g9ean a").click()
         except:
             pass
         
